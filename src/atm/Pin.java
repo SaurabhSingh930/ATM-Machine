@@ -1,0 +1,68 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package atm;
+
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.sql.SQLException;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPasswordField;
+
+/**
+ *
+ * @author dell
+ */
+public class Pin {
+   	public void pinView(String cardNum) {
+		Commons common = new Commons();
+		JFrame frame = (JFrame)common.Frame();
+		Font txt = new Font("", Font.BOLD, 15);
+		Home home = new Home();
+		Admin admin = new Admin();
+		
+		//---------------PASSWORD----------------
+		JLabel pswd = new JLabel("ENTER YOUR PIN");
+		pswd.setBounds(50, 270, 250, 20);
+		pswd.setFont(txt);
+		JPasswordField pswdField = new JPasswordField();
+		pswdField.setBounds(50, 300, 500, 35);
+		pswdField.setFont(txt);
+		frame.add(pswdField);
+		frame.add(pswd);
+		//-----------------------------------------
+		
+		//-----------------BUTTON-----------------
+		JButton cont = new JButton("CONTINUE");
+		cont.setBounds(200, 400, 200, 50);
+		cont.setFont(new Font("Rockwell", Font.BOLD, 25));
+		frame.add(cont);
+		cont.addActionListener((ActionEvent e) -> {
+                    try {
+                        SQLManage man = new SQLManage();
+                        var rst = man.check(cardNum, pswdField.getText());
+                        if(rst.next()) {
+                            if(rst.getString("card").equals("admin")) {
+                                admin.adminView();
+                                frame.dispose();
+                            }
+                            else {
+                                home.homeView(rst.getInt("id"));
+                                frame.dispose();
+                            }
+                        }
+                        else {
+                            Fail fail = new Fail();
+                            fail.failView("WRONG PIN!!!");
+                            frame.dispose();
+                        }
+                    } catch (SQLException e1) {
+                    }
+                });
+		//----------------------------------------
+		frame.setVisible(true);
+	}
+}
